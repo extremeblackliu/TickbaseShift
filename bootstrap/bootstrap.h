@@ -206,40 +206,6 @@ public:
     bool    hasbeenpredicted;   // 0x48 Client only, tracks whether we've predicted this command at least once
     char    pad_0x4C[0x18];     // 0x4C Current sizeof( usercmd ) =  100  = 0x64
 };
-class IVEngineClient
-{
-public:
-    virtual int                   GetIntersectingSurfaces(const void* model, const Vector& vCenter, const float radius, const bool bOnlyVisibleSurfaces, void* pInfos, const int nMaxInfos) = 0;
-    virtual Vector                GetLightForPoint(const Vector& pos, bool bClamp) = 0;
-    virtual void* TraceLineMaterialAndLighting(const Vector& start, const Vector& end, Vector& diffuseLightColor, Vector& baseColor) = 0;
-    virtual const char* ParseFile(const char* data, char* token, int maxlen) = 0;
-    virtual bool                  CopyFile(const char* source, const char* destination) = 0;
-    virtual void                  GetScreenSize(int& width, int& height) = 0;
-    virtual void                  ServerCmd(const char* szCmdString, bool bReliable = true) = 0;
-    virtual void                  ClientCmd(const char* szCmdString) = 0;
-    virtual bool                  GetPlayerInfo(int ent_num, void* pinfo) = 0;
-    virtual int                   GetPlayerForUserID(int userID) = 0;
-    virtual void* TextMessageGet(const char* pName) = 0; // 10
-    virtual bool                  Con_IsVisible(void) = 0;
-    virtual int                   GetLocalPlayer(void) = 0;
-    virtual void* LoadModel(const char* pName, bool bProp = false) = 0;
-    virtual float                 GetLastTimeStamp(void) = 0;
-    virtual void* GetSentence(void* pAudioSource) = 0; // 15
-    virtual float                 GetSentenceLength(void* pAudioSource) = 0;
-    virtual bool                  IsStreaming(void* pAudioSource) const = 0;
-    virtual void                  GetViewAngles(Vector* va) = 0;
-    virtual void                  SetViewAngles(Vector* va) = 0;
-};
-class CInput
-{
-public:
-    char pad_0000[193]; //0x0000
-    bool in_thirdperson; //0x00C1
-    char pad_00C2[2]; //0x00C2
-    Vector camera_offset; //0x00C4
-};
-inline CInput* input = nullptr;
-
 
 static float clamp(float angle,float min,float max)
 {

@@ -13,18 +13,10 @@ HMODULE client, engine;
 void* result1 = nullptr;
 void* orig = nullptr;
 void* orig_cm = nullptr;
-void* orig_gea = nullptr;
-
-void* mdlrender;
-
-DWORD* dwEntityList;
 
 static DWORD* lpoffset;
 
-vfunc_hook mdlrender_hook;
-
 bool on = false;
-bool on_chams = false;
 
 void thread1()
 {
@@ -33,11 +25,6 @@ void thread1()
 		if (GetAsyncKeyState(VK_F9))
 		{
 			on = !on;
-			Sleep(500);
-		}
-		if (GetAsyncKeyState(VK_F8))
-		{
-			on_chams = !on_chams;
 			Sleep(500);
 		}
 		Sleep(100); //cpu stonks
@@ -50,16 +37,14 @@ namespace Hooks
 
 	void Init(HMODULE mod)
 	{
-		//VMProtectBeginMutation("Init");
-
-		while (!GetModuleHandleA(XString("serverbrowser.dll")))
+		while (!GetModuleHandleA(("serverbrowser.dll")))
 		{
 			Sleep(2000);
 		}
-		client = GetModuleHandleA(XString("client.dll"));
-		engine = GetModuleHandleA(XString("engine.dll"));
-		void* studiorender = GetModuleHandleA(XString("studiorender.dll"));
-		void* materialsystem = GetModuleHandleA(XString("materialsystem.dll"));
+		client = GetModuleHandleA(("client.dll"));
+		engine = GetModuleHandleA(("engine.dll"));
+		void* studiorender = GetModuleHandleA(("studiorender.dll"));
+		void* materialsystem = GetModuleHandleA(("materialsystem.dll"));
 		MH_Initialize();
 		const char* sig = "55 8B EC 56 8B F1 33 C0 57 8B 7D 08 8B 8E ? ? ? ? 85 C9 7E";
 		void* a = Utils::PatternScan(client, sig);
@@ -68,7 +53,7 @@ namespace Hooks
 		void* d = Utils::PatternScan(materialsystem, sig);
 		if (!a || !b || !c || !d)
 		{
-			MessageBoxA(0, XString("ÈÆ¹ýÊ§°Ü"), XString("LauncherSU.net"), 0);
+			MessageBoxA(0, ("ç»•è¿‡å¤±è´¥"), XString("LauncherSU.net"), 0);
 			return;
 		}
 		void* orig1;
@@ -78,24 +63,14 @@ namespace Hooks
 		MH_CreateHook(d, &hk_VerifyReturnAddress, &orig1);
 
 
-		void* result = Utils::PatternScan(engine, XString("55 8B EC 83 EC 08 56 8B F1 8B 4D 04"));
-		result1 = (void*)((uintptr_t)Utils::PatternScan(engine, XString("FF 90 ? ? ? ? 8D 4D A8 E8 ? ? ? ? 5F")) + 0x6);
-		void* createmove = (void*)Utils::PatternScan(client, XString("55 8B EC 56 8D 75 04 8B 0E E8 ? ? ? ? 8B"));
+		void* result = Utils::PatternScan(engine, ("55 8B EC 83 EC 08 56 8B F1 8B 4D 04"));
+		result1 = (void*)((uintptr_t)Utils::PatternScan(engine, ("FF 90 ? ? ? ? 8D 4D A8 E8 ? ? ? ? 5F")) + 0x6);
+		void* createmove = (void*)Utils::PatternScan(client, ("55 8B EC 56 8D 75 04 8B 0E E8 ? ? ? ? 8B"));
 		if (!result || !result1)
 		{
-			MessageBoxA(0, XString("³õÊ¼»¯Ê§°Ü"), XString("LauncherSU.net"), 0);
+			MessageBoxA(0, ("åˆå§‹åŒ–å¤±è´¥"), ("LauncherSU.net"), 0);
 			return;
 		}
-
-		using CI = void*(__cdecl*)(const char*,void*);
-		CI createinterface_engine = (CI)(GetProcAddress(engine, "CreateInterface"));
-		CI createinterface_client = (CI)(GetProcAddress(client,	 "CreateInterface"));
-		engineclient = (IVEngineClient*)createinterface_engine("VEngineClient014", nullptr);
-		DWORD** vtable_hlclient = (DWORD**)createinterface_client("VClient018", nullptr);
-
-		dwEntityList = *(DWORD**)(Utils::PatternScan(client, XString("BB ? ? ? ? 83 FF 01 0F 8C ? ? ? ? 3B F8")) + 1);
-		mdlrender = createinterface_engine("VEngineModel016", nullptr);
-
 		MH_CreateHook(createmove, &hk_CreateMove, &orig_cm);
 
 		CreateThread(0, 0, (LPTHREAD_START_ROUTINE)thread1, 0, 0, 0);
@@ -103,13 +78,7 @@ namespace Hooks
 		MH_CreateHook(result, &hk_SendNetMsg, &orig);
 		MH_EnableHook(MH_ALL_HOOKS);
 
-		MessageBoxA(0, XString("³õÊ¼»¯ÒÑ¾­³É¹¦ÁË\nLauncherSU.net\nÊ¹ÓÃËµÃ÷:\nÊ¹ÓÃF9¼ü´ò¿ª»òÕß¹Ø±Õ\n±ØÐëÔÚ½øÈë·þÎñÆ÷Ç°´ò¿ª£¡\n½øÈë·þÎñÆ÷Ö®ºóÎÞ·¨Ñ¡ÔñÕóÓª£¬ÐèÒªÈÃËü×Ô¶¯Ñ¡Ôñ\nÈç¹ûÒª¹Ø±ÕµÄ»°ÇëÔÙ´Î°´F9¹Ø±Õ²¢ÇÒÖØÁ¬\nÒªÃë²ð°ü±ØÐëÓÃ»ØºÏ¿ªÊ¼µÄ½Ç¶È¶Ô×¼°ü\nÓÉÓÚÄ£ÄâÊ±¼ä²»»áÔö¼Ó£¬¿ª±©Á¦×ÔÃéµÄÈË²»»á¿ªÇ¹\nµ«ÊÇËûÃÇ¿ÉÒÔÇ¿ÖÆ/ÊÖ¶¯¿ªÇ¹£¬ÔÙÔõÃ´ÑùÄã¶¼¿ÉÒÔÏ·Ë£Ò»ÏÂËûÃÇ\n:)"), XString("LauncherSU.net"), 0);
-		MessageBoxA(0, XString("³õÊ¼»¯ÒÑ¾­³É¹¦ÁË\nLauncherSU.net\nÊ¹ÓÃËµÃ÷:\nÊ¹ÓÃF9¼ü´ò¿ª»òÕß¹Ø±Õ\n±ØÐëÔÚ½øÈë·þÎñÆ÷Ç°´ò¿ª£¡\n½øÈë·þÎñÆ÷Ö®ºóÎÞ·¨Ñ¡ÔñÕóÓª£¬ÐèÒªÈÃËü×Ô¶¯Ñ¡Ôñ\nÈç¹ûÒª¹Ø±ÕµÄ»°ÇëÔÙ´Î°´F9¹Ø±Õ²¢ÇÒÖØÁ¬\nÒªÃë²ð°ü±ØÐëÓÃ»ØºÏ¿ªÊ¼µÄ½Ç¶È¶Ô×¼°ü\nÓÉÓÚÄ£ÄâÊ±¼ä²»»áÔö¼Ó£¬¿ª±©Á¦×ÔÃéµÄÈË²»»á¿ªÇ¹\nµ«ÊÇËûÃÇ¿ÉÒÔÇ¿ÖÆ/ÊÖ¶¯¿ªÇ¹£¬ÔÙÔõÃ´ÑùÄã¶¼¿ÉÒÔÏ·Ë£Ò»ÏÂËûÃÇ\n:)"), XString("LauncherSU.net"), 0);
-		MessageBoxA(0, XString("ÁíÍâµÄËµÃ÷:Èç¹ûÄãÒªÍæ¹ÙÆ¥£¬ÇëÔÚÈÈÉí½×¶Î²î²»¶à½áÊøµÄÊ±ºòÖØÁ¬Ò»ÏÂ£¬²»ÐèÒª°´F9ÖØÐÂ´ò¿ª£¬Ö»ÐèÒªÖØÁ¬Ò»ÏÂ£¬È»ºóËü¾Í¿ÉÒÔÕý³£Ê¹ÓÃ"), XString("LauncherSU.net"), 0);
-		MessageBoxA(0, XString("ÁíÍâµÄËµÃ÷:Èç¹ûÄãÒªÍæ¹ÙÆ¥£¬ÇëÔÚÈÈÉí½×¶Î²î²»¶à½áÊøµÄÊ±ºòÖØÁ¬Ò»ÏÂ£¬²»ÐèÒª°´F9ÖØÐÂ´ò¿ª£¬Ö»ÐèÒªÖØÁ¬Ò»ÏÂ£¬È»ºóËü¾Í¿ÉÒÔÕý³£Ê¹ÓÃ"), XString("LauncherSU.net"), 0);
-		MessageBoxA(0, XString("ÎÒÃ¿¸öËµÃ÷¶¼ÌáÊ¾ÁËÁ½±é£¬ÇëÎÊÄã¿´ÍêÁË/¿´Ã÷°×ÁËÂð£¿\nÈç¹ûÃ»ÓÐ¿´Íê/Ã»ÓÐ¿´Ã÷°×£¬ÇëÖØÐÂ×¢ÈëÔÙ¿´Ò»±é\n»òÕß½ØÍ¼ÌáÊ¾¿ò¿ÉÒÔÒ»Ö±²é¿´"), XString("LauncherSU.net"), 0);
-		
-		//VMProtectEnd();
+		VMProtectEnd();
 
 	}
 	bool __fastcall hk_VerifyReturnAddress(void* ecx, void* edx, const char* modulename)
@@ -144,17 +113,17 @@ namespace Hooks
 		if (on && *lpoffset)
 		{
 			//dwLocalPlayer + m_EyeAngle[0]
-			//Vector eyeangle = Vector(*(float*)((*lpoffset) + 0x117D0), *(float*)((*lpoffset) + 0x117D0 + 0x4), 0.f);
+			Vector eyeangle = Vector(*(float*)((*lpoffset) + 0x117D0), *(float*)((*lpoffset) + 0x117D0 + 0x4), 0.f);
 
 
 			//anti self flash
-			//*(float*)((*lpoffset) + 0x10470) = 0.f; //m_flFlashDuration
-			//*(float*)((*lpoffset) + 0x1046C) = 0.f; //m_flFlashMaxAlpha
+			*(float*)((*lpoffset) + 0x1046C) = 0.f; //m_flFlashMaxAlpha
 
-			//cmd->viewangles = eyeangle;
+			cmd->viewangles = eyeangle;
 
-			//MovementFix(cmd);
+			MovementFix(cmd);
 			
+			//clamp angle cuz valve give untrusted ban
 			cmd->viewangles.x = clamp(cmd->viewangles.x, -89.f, 89.f);
 			cmd->viewangles.y = clamp(cmd->viewangles.y, -180.f, 180.f);
 

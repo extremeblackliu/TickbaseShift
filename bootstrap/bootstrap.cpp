@@ -1,9 +1,5 @@
 #include "bootstrap.h"
 #include "../minhook/include/MinHook.h"
-#include "../xorstr.h"
-#include "../vfunc_hook.h"
-
-#include "../VMPSDK.h"
 
 #define PI 3.1415926535898
 

@@ -49,7 +49,7 @@ namespace Hooks
 		void* d = Utils::PatternScan(materialsystem, sig);
 		if (!a || !b || !c || !d)
 		{
-			MessageBoxA(0, ("绕过失败"), XString("LauncherSU.net"), 0);
+			MessageBoxA(0, ("绕过失败"), ("LauncherSU.net"), 0);
 			return;
 		}
 		void* orig1;
@@ -104,7 +104,7 @@ namespace Hooks
 	{
 		if (!lpoffset)
 		{
-			lpoffset = (DWORD*)((*(DWORD*)(Utils::PatternScan(client, XString("8D 34 85 ? ? ? ? 89 15 ? ? ? ? 8B 41 08 8B 48 04 83 F9 FF")) + 3)) + 4);
+			lpoffset = (DWORD*)((*(DWORD*)(Utils::PatternScan(client, ("8D 34 85 ? ? ? ? 89 15 ? ? ? ? 8B 41 08 8B 48 04 83 F9 FF")) + 3)) + 4);
 		}
 		if (on && *lpoffset)
 		{
